@@ -1,70 +1,169 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `yarn start`
+### `npm install`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+And then just run
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### `npm start`
 
-### `yarn test`
+This app contains global store of useReducer and Context API with actions. Action file contains the exact requirement of project.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This App contains JSON text input for user and also a result text box in the bottome of JSON text input.
+All operations should be performed according to below details.
 
-### `yarn build`
+Consider this simple JavaScript data structure (the "content") which consists of an array 
+of objects. Each object has an "id" property. For example:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+[{
+		"id": "cat"
+	},
+	{
+		"id": "frog"
+	},
+	{
+		"id": "dog"
+	},
+	{
+		"id": "horse"
+	},
+	{
+		"id": "caribou"
+	}
+]
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The ids in an instance of the "content" data structure are unique (and must remain so). 
+For example, it would be an error to attempt to add a new object to the above array with 
+an "id" of "cat".
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+A simple language is used to describe transformations which can be applied to the 
+"content" data structure described above. Each transformation is an object with properties 
+that describe how the content should be transformed. All transforms contain two common 
+properties; "type" and "target". The "type" property determines the type of transformation 
+to be performed. The "target" property determines the object in the data array to be 
+transformed. An example transform is below:
 
-### `yarn eject`
+{
+    "type":"remove",
+	"target": {
+		"id": "cat"
+	}
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The target of a transform may be identified by its "id" (as above), or by its position in 
+the array (zero-based). An example of this is below:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+{
+    "type":"move",
+	"target": {
+		"pos": "0"
+	},
+	"distance": 2
+}
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This transformation attempts to move the first item in the array forward by a distance of 
+two places (so it will now be in third position in the array). If the distance would place 
+the moved item outside the bounds of the array, then the move should "wrap around". For 
+example, moving the first item in the array by a distance of -1 should place the item at 
+the end of the array, and conversely moving the last item in the array by a distance of 1 
+should place the item at the beginning of the array.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+There are three types of transformation:
 
-## Learn More
+1. Remove
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Delete the item identified by its "id" from the "data" array. See the examples below:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+{
+    "type":"remove",
+	"target": {
+		"id": "cat"
+	}
+}
 
-### Code Splitting
+2. Rename
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Rename the item identified by its "id" to the value specified in the "newid" property.
 
-### Analyzing the Bundle Size
+{
+	"type":"rename",
+	"target": {
+		"id": "horse"
+	},
+	"newid":"lion"
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+3. Move
 
-### Making a Progressive Web App
+Move the item identified by its current position forwards or backwards through the array 
+by the specified distance (negative distance indicate moving backwards, positive distance 
+indicates moving forward). 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+{
+	"type":"move",
+	"target": {
+		"pos": 2
+	},
+	"distance":-1
+}
 
-### Advanced Configuration
+{
+	"type":"move",
+	"target": {
+		"pos": 0
+	},
+	"distance":2
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+An array of transformations can be applied to content by iterating over the array and 
+applying each transformation in order. Each transform should be applied only if it is 
+"possible". If a transform cannot be applied, it should be ignored and the next transform 
+should be processed. The list below specifies the situations in which each type of 
+transformation should be ignored:
 
-### Deployment
+- Remove should be ignored if: 
+	- no object with the specified id exists
+- Rename should be ignored if: 
+	- no object with the specified id exists
+	- another object exists with the same id as "newid"
+	
+Implement (and test) a JavaScript/Typescript function called transform which takes a 
+content array and a transformations array as parameters and returns the transformed 
+content array. Your solution should take into account performance as well as good style 
+and correctness. You may create helper functions and additional data structures in your 
+implementation if you find them useful, but the transform function must return a valid 
+content array as described above. You should be prepared to discuss your design in our 
+next interview.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The function prototype and sample usage is supplied below:
 
-### `yarn build` fails to minify
+function transform(content, transformations) {
+	//To be implemented
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+let content = { /* ...*/ };
+let trans = = { /* ...*/ };
+
+let result = transform(content, trans);
+
+An example content and a transformation list are provided for testing. You should create 
+your own additional content and transformation lists to support you development and 
+testing needs. You should pay attention to the correctness and performance of your 
+solution.
+
+Please provide a user interface using the web technology/framework of your choice 
+to showcase the most appropriate way to present a visualisation of the 
+pre- and post- state of the data, and provide users with a way to see how their 
+transformation task has executed.
+
+
+--------------------------------------
+
+Semlr Confidential
+------------------
+
+The information contained in this file and its accompanying data files is confidential to 
+Semlr Limited. The IP for all work contained in this file and the accompanying data files 
+belongs to Semlr Limited. You are not permitted to post this content online, share or 
+distribute the contents of these files in any form without written permission.
